@@ -353,10 +353,10 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
             ],
           ),
         ),
-        VerticalDivider(
-          width: 1,
-          thickness: 1,
-        ),
+        // VerticalDivider(
+        //   width: 1,
+        //   thickness: 1,
+        // ),
         Expanded(
           child: Scaffold(
             appBar: appBar,
