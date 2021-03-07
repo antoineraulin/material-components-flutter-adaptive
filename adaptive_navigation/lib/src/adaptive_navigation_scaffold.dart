@@ -31,10 +31,12 @@ enum NavigationType {
 class AdaptiveScaffoldDestination {
   final String title;
   final IconData icon;
+  final IconData? activeIcon;
 
   const AdaptiveScaffoldDestination({
     required this.title,
     required this.icon,
+    this.activeIcon,
   });
 }
 
@@ -69,7 +71,7 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
     this.drawerHeader,
     this.fabInRail = true,
     this.includeBaseDestinationsInMenu = true,
-  })  : super(key: key);
+  }) : super(key: key);
 
   /// See [Scaffold.appBar].
   final PreferredSizeWidget? appBar;
@@ -184,11 +186,14 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
           if (drawerHeader != null) drawerHeader!,
           for (int i = 0; i < destinations.length; i++)
             ListTile(
-              leading: Icon(destinations[i].icon),
+              leading: Icon(selectedIndex == i
+                  ? destinations[i].activeIcon
+                  : destinations[i].icon),
               title: Text(destinations[i].title),
               onTap: () {
                 onDestinationSelected?.call(i);
               },
+              enableFeedback: true,
             )
         ],
       ),
@@ -216,6 +221,7 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
           for (final destination in bottomDestinations)
             BottomNavigationBarItem(
               icon: Icon(destination.icon),
+              activeIcon: Icon(destination.activeIcon),
               label: destination.title,
             ),
         ],
@@ -250,11 +256,13 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
               for (final destination in railDestinations)
                 NavigationRailDestination(
                   icon: Icon(destination.icon),
+                  selectedIcon: Icon(destination.activeIcon),
                   label: Text(destination.title),
                 ),
             ],
             selectedIndex: selectedIndex,
             onDestinationSelected: onDestinationSelected ?? (_) {},
+            labelType: NavigationRailLabelType.selected,
           ),
           VerticalDivider(
             width: 1,
@@ -293,12 +301,14 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
           children: [
             // TODO: Find a better way to write `drawerHeader!`
             if (drawerHeader != null) drawerHeader!,
-            for (final destination in destinations)
+            for (int i = 0; i < destinations.length; i++)
               ListTile(
-                leading: Icon(destination.icon),
-                title: Text(destination.title),
-                selected: destinations.indexOf(destination) == selectedIndex,
-                onTap: () => _destinationTapped(destination),
+                leading: Icon(i == selectedIndex
+                    ? destinations[i].activeIcon
+                    : destinations[i].icon),
+                title: Text(destinations[i].title),
+                selected: i == selectedIndex,
+                onTap: () => _destinationTapped(destinations[i]),
               ),
           ],
         ),
@@ -332,7 +342,10 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
               if (drawerHeader != null) drawerHeader!,
               for (final destination in destinations)
                 ListTile(
-                  leading: Icon(destination.icon),
+                  leading: Icon(
+                      destinations.indexOf(destination) == selectedIndex
+                          ? destination.activeIcon
+                          : destination.icon),
                   title: Text(destination.title),
                   selected: destinations.indexOf(destination) == selectedIndex,
                   onTap: () => _destinationTapped(destination),
