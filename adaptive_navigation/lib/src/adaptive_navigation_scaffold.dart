@@ -200,7 +200,7 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomNavigationScaffold() {
+  Widget _buildBottomNavigationScaffold(BuildContext context) {
     final int bottomNavigationOverflow = 5;
     final bottomDestinations = destinations.sublist(
       0,
@@ -225,9 +225,12 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
               label: destination.title,
             ),
         ],
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        selectedItemColor: Theme.of(context).indicatorColor,
+        unselectedItemColor: Theme.of(context).unselectedWidgetColor,
         currentIndex: selectedIndex,
         onTap: onDestinationSelected ?? (_) {},
-        type: BottomNavigationBarType.fixed,
+        //type: BottomNavigationBarType.shifting,
       ),
       floatingActionButton: floatingActionButton,
     );
@@ -332,54 +335,73 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
     );
   }
 
-  Widget _buildPermanentDrawerScaffold() {
-    return Row(
-      children: [
-        Drawer(
-          child: Column(
-            children: [
-              // TODO: Find a better way to write `drawerHeader!`
-              if (drawerHeader != null) drawerHeader!,
-              for (final destination in destinations)
-                ListTile(
-                  leading: Icon(
+  Widget _buildPermanentDrawerScaffold(BuildContext context) {
+    return Scaffold(
+      appBar: appBar,
+      body: Row(
+        children: [
+          Drawer(
+            child: Column(
+              children: [
+                // TODO: Find a better way to write `drawerHeader!`
+                if (drawerHeader != null) drawerHeader!,
+                for (final destination in destinations)
+                  ListTile(
+                    leading: Icon(
                       destinations.indexOf(destination) == selectedIndex
                           ? destination.activeIcon
-                          : destination.icon),
-                  title: Text(destination.title),
-                  selected: destinations.indexOf(destination) == selectedIndex,
-                  onTap: () => _destinationTapped(destination),
-                ),
-            ],
+                          : destination.icon,
+                      color: destinations.indexOf(destination) == selectedIndex
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.64),
+                    ),
+                    title: Text(
+                      destination.title,
+                      style: TextStyle(
+                          color:
+                              destinations.indexOf(destination) == selectedIndex
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.64)),
+                    ),
+                    selected:
+                        destinations.indexOf(destination) == selectedIndex,
+                    onTap: () => _destinationTapped(destination),
+                  ),
+              ],
+            ),
+            elevation: 0,
           ),
-        ),
-        // VerticalDivider(
-        //   width: 1,
-        //   thickness: 1,
-        // ),
-        Expanded(
-          child: Scaffold(
-            appBar: appBar,
-            body: body,
-            floatingActionButton: floatingActionButton,
-            floatingActionButtonLocation: floatingActionButtonLocation,
-            floatingActionButtonAnimator: floatingActionButtonAnimator,
-            persistentFooterButtons: persistentFooterButtons,
-            endDrawer: endDrawer,
-            bottomSheet: bottomSheet,
-            backgroundColor: backgroundColor,
-            resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-            primary: true,
-            drawerDragStartBehavior: drawerDragStartBehavior,
-            extendBody: extendBody,
-            extendBodyBehindAppBar: extendBodyBehindAppBar,
-            drawerScrimColor: drawerScrimColor,
-            drawerEdgeDragWidth: drawerEdgeDragWidth,
-            drawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
-            endDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
+          VerticalDivider(
+            width: 1,
+            thickness: 1,
           ),
-        ),
-      ],
+          Expanded(
+            child: body,
+          ),
+        ],
+      ),
+      floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
+      floatingActionButtonAnimator: floatingActionButtonAnimator,
+      persistentFooterButtons: persistentFooterButtons,
+      endDrawer: endDrawer,
+      bottomSheet: bottomSheet,
+      backgroundColor: backgroundColor,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+      primary: true,
+      drawerDragStartBehavior: drawerDragStartBehavior,
+      extendBody: extendBody,
+      extendBodyBehindAppBar: extendBodyBehindAppBar,
+      drawerScrimColor: drawerScrimColor,
+      drawerEdgeDragWidth: drawerEdgeDragWidth,
+      drawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
+      endDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
     );
   }
 
@@ -390,13 +412,13 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
     final navigationType = navigationTypeResolver(context);
     switch (navigationType) {
       case NavigationType.bottom:
-        return _buildBottomNavigationScaffold();
+        return _buildBottomNavigationScaffold(context);
       case NavigationType.rail:
         return _buildNavigationRailScaffold();
       case NavigationType.drawer:
         return _buildNavigationDrawerScaffold();
       case NavigationType.permanentDrawer:
-        return _buildPermanentDrawerScaffold();
+        return _buildPermanentDrawerScaffold(context);
     }
   }
 
