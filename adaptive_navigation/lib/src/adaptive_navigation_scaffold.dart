@@ -223,6 +223,7 @@ class AdaptiveNavigationScaffold extends StatelessWidget {
               icon: Icon(destination.icon),
               activeIcon: Icon(destination.activeIcon),
               label: destination.title,
+              backgroundColor: Theme.of(context).primaryColor,
             ),
         ],
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
